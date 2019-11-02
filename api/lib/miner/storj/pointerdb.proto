@@ -9,12 +9,12 @@ package pointerdb;
 import "google/protobuf/timestamp.proto";
 import "gogo.proto";
 import "node.proto";
-import "piecestore.proto";
 import "orders.proto";
 
 message RedundancyScheme {
   enum SchemeType {
-    RS = 0;
+    INVALID = 0;
+    RS = 1;
   }
   SchemeType type = 1;
 
@@ -52,10 +52,14 @@ message Pointer {
   RemoteSegment remote = 4;
   int64 segment_size = 5;
 
-  google.protobuf.Timestamp creation_date = 6;
-  google.protobuf.Timestamp expiration_date = 7;
+  google.protobuf.Timestamp creation_date = 6 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
+  google.protobuf.Timestamp expiration_date = 7 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
 
   bytes metadata = 8;
+
+  google.protobuf.Timestamp last_repaired = 9 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
+  int32 repair_count = 10;
+  bool piece_hashes_verified = 11;
 }
 
 // ListResponse is a response message for the List rpc call
@@ -65,7 +69,7 @@ message ListResponse {
     Pointer pointer = 2;
     bool    is_prefix = 3;
   }
-  
+
   repeated Item items = 1;
   bool more = 2;
 }
